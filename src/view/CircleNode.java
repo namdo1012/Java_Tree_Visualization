@@ -57,6 +57,7 @@ public class CircleNode extends StackPane implements Comparable{
 
   @Override
   public int compareTo(Object o) {
+    if (o == null) return -1;
     if (this.getLayoutX() == ((CircleNode) o).getLayoutX() && this.getLayoutY() == ((CircleNode) o).getLayoutY()) {
       return 0;
     }

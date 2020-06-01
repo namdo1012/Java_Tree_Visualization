@@ -4,9 +4,12 @@ import controller.TreeController;
 import javafx.animation.ParallelTransition;
 import javafx.animation.TranslateTransition;
 import javafx.application.Application;
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Group;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.TextField;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.shape.Line;
 import javafx.stage.Stage;
@@ -15,101 +18,106 @@ import model.AVLTree;
 import model.BST;
 import model.Node;
 
+import java.util.HashMap;
+import java.util.Scanner;
+
 public class Main extends Application {
 
   @Override
   public void start(Stage primaryStage) throws Exception{
 
-    BST<Integer> bstTree = new BST<>();
-    AVLTree<Integer> avlTree = new AVLTree<>();
+        BST<Integer> bstTree = new BST<>();
+        AVLTree<Integer> avlTree = new AVLTree<>();
 
-    TreeController treeControllerForBST = new TreeController(bstTree);
-    TreeController treeControllerForAVL = new TreeController(avlTree);
+        TreeController treeControllerForBST = new TreeController(bstTree);
+        TreeController treeControllerForAVL = new TreeController(avlTree);
 
     //    Intitialize parallel transition
-      ParallelTransition pl = new ParallelTransition();
-      Group root = new Group();
-//    TEST WITH USER INPUT
-      int i = 0;
-      int[] array = {10, 16, 7, 19, 25, 2, 1, 0, -2};
+        ParallelTransition pl = new ParallelTransition();
+        Group root = new Group();
 
+        primaryStage.setTitle("Visualize Tree Algorithms");
+        Scene scene = new Scene(root, 1000, 600);
+        primaryStage.setScene(scene);
 
+        TextField userText = new TextField();
+        root.getChildren().add(userText); //attach the text field to the scene.
 
-    avlTree.insert(10);
-    bstTree.insert(10);
-    avlTree.insert(16);
-    bstTree.insert(16);
-    avlTree.insert(7);
-    bstTree.insert(7);
-    avlTree.insert(19);
-    bstTree.insert(19);
-    avlTree.insert(25);
-    bstTree.insert(25);
-    avlTree.insert(2);
-    bstTree.insert(2);
-    avlTree.insert(1);
-    bstTree.insert(1);
-    avlTree.insert(0);
-    bstTree.insert(0);
-    avlTree.insert(-2);
-    bstTree.insert(-2);
-    avlTree.insert(3);
-    bstTree.insert(3);
+        Button b = new Button();
+        b.setLayoutX(500);
+        b.setLayoutY(0);
+        b.setMinWidth(50);
+        root.getChildren().add(b); // attach the button to desired node in the scene
 
-    // Create treeView from treeNode
-    treeControllerForAVL.updateTreeView();
-    treeControllerForBST.updateTreeView();
+        // Program run when user input new value
+        b.setOnAction(event -> {
 
-//    Display BST Tree to screen
-      treeControllerForBST.displayTree(root);
+            String text = userText.getText();
+            int userInput = Integer.parseInt(text);
 
-    for (Node bstKey : treeControllerForBST.treeView.keySet()) {
-      for (Node avlKey : treeControllerForAVL.treeView.keySet()){
-        if (bstKey.element.compareTo(avlKey.element) == 0){
-            CircleNode bstNode = treeControllerForBST.treeView.get(bstKey);
-            CircleNode avlNode = treeControllerForAVL.treeView.get(avlKey);
+            // Add value to tree
+            avlTree.insert(userInput);
+            bstTree.insert(userInput);
 
-            // Find position to moving to in avlTree
-            double moveToX = avlNode.getLayoutX();
-            double moveToY = avlNode.getLayoutY();
+            // Remove the last tree to paint again
+            root.getChildren().removeAll(root.getChildren().filtered(el -> el instanceof Line));
+            root.getChildren().removeAll(root.getChildren().filtered(el -> el instanceof CircleNode));
 
-            TranslateTransition tt = new TranslateTransition(Duration.seconds(3), bstNode);
-            tt.setCycleCount(1);
-            tt.setByX(moveToX - bstNode.getLayoutX());
-            tt.setByY(moveToY - bstNode.getLayoutY());
-            pl.getChildren().add(tt);
-        }
-      }
-    }
+            // Create treeView from treeNode
+            treeControllerForAVL.updateTreeView();
+            treeControllerForBST.updateTreeView();
 
-    primaryStage.setTitle("Visualize Tree Algorithms");
-    Scene scene = new Scene(root, 1000, 600);
-    primaryStage.setScene(scene);
+            // Display BST Tree to screen
+            treeControllerForBST.displayTree(root);
 
-    //    Fire the rotating animation when hit ENTER!
-    scene.setOnKeyPressed(new EventHandler<KeyEvent>() {
-          public void handle(KeyEvent ke) {
-              System.out.println("Key Pressed: " + ke.getCode());
-//              Play rotate animation for AVL Tree
-              pl.play();
-//              Clear all lines on the screen
-              root.getChildren().removeAll(root.getChildren().filtered(el -> el instanceof Line));
+            // Run rotate animation on BST Tree
+            for (Node bstKey : treeControllerForBST.treeView.keySet()) {
+                for (Node avlKey : treeControllerForAVL.treeView.keySet()) {
+                    if (bstKey.element.compareTo(avlKey.element) == 0) {
+                          CircleNode bstNode = treeControllerForBST.treeView.get(bstKey);
+                          CircleNode avlNode = treeControllerForAVL.treeView.get(avlKey);
 
-//              After animation, change BST Tree to AVL Tree to continue
-              treeControllerForBST.treeView = treeControllerForAVL.treeView;
+                          // Find position to moving to in avlTree
+                          double moveToX = avlNode.getLayoutX();
+                          double moveToY = avlNode.getLayoutY();
 
-//              Display tree again
-              treeControllerForBST.treeView.forEach((node, cir) -> {
+                          TranslateTransition tt = new TranslateTransition(Duration.seconds(3), bstNode);
+                          tt.setCycleCount(1);
+                          tt.setByX(moveToX - bstNode.getLayoutX());
+                          tt.setByY(moveToY - bstNode.getLayoutY());
+                          pl.getChildren().add(tt);
+                    }
+                }
+            }
+
+//            pl.setOnFinished(new EventHandler<ActionEvent>() {
+//                @Override
+//                public void handle(ActionEvent actionEvent) {
+//                    treeControllerForBST.setTreeNode(treeControllerForAVL.getTreeNode());
+//                }
+//            });
+
+            // Play rotate animation
+            pl.play();
+
+            // Clear all lines on the screen
+            root.getChildren().removeAll(root.getChildren().filtered(el -> el instanceof Line));
+
+            //  After animation, change BST Tree to AVL Tree to continue
+            //  treeControllerForBST.treeView = treeControllerForAVL.treeView;
+            //  treeControllerForBST.updateTreeView();
+            //  treeControllerForAVL.updateTreeView();
+
+            //  Display lines again
+            treeControllerForAVL.treeView.forEach((node, cir) -> {
                   System.out.println("Value: " + node.element + ": " + cir.getLayoutX());
                   if (cir.getLineLeft() != null) root.getChildren().add(cir.getLineLeft());
                   if (cir.getLineRight() != null) root.getChildren().add(cir.getLineRight());
               });
-          }
-      });
+            });
 
-    primaryStage.show();
+        primaryStage.show();
   }
-
 
   public static void main(String[] args) {
     launch(args);

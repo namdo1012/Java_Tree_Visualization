@@ -13,7 +13,7 @@ import java.util.Set;
 
 public class TreeController {
   public HashMap<Node, CircleNode> treeView;
-  private BST tree;
+  public BST tree;
 
   // For test
   private final double CENTER_X = 500;
@@ -23,6 +23,14 @@ public class TreeController {
 
   public TreeController(BST tree) {
     this.treeView = createTreeView(tree);
+    this.tree = tree;
+  }
+
+  public BST getTreeNode(){
+    return this.tree;
+  }
+
+  public void setTreeNode(BST tree){
     this.tree = tree;
   }
 
@@ -63,16 +71,16 @@ public class TreeController {
     });
   }
   // Function return HashMap of changed Node and CircleNode
-//  public HashMap<Node, CircleNode> getListNodeChanged() {
-//    HashMap<Node, CircleNode> list = new HashMap<>();
-//    HashMap<Node, CircleNode> newTreeView = createTreeView(this.tree);
-//
-//    for (Node key : this.treeView.keySet()) {
-//      if (newTreeView.get(key).compareTo(this.treeView.get(key)) != 0) {
-//        list.put(key, newTreeView.get(key));
-//      }
-//    }
-//    return list;
-//  }
+  public HashMap<Node, CircleNode> getListNodeChanged() {
+    HashMap<Node, CircleNode> list = new HashMap<>();
+    HashMap<Node, CircleNode> newTreeView = createTreeView(this.tree);
+
+    for (Node key : newTreeView.keySet()) {
+      if (newTreeView.get(key).compareTo(this.treeView.get(key)) != 0) {
+        list.put(key, newTreeView.get(key));
+      }
+    }
+    return list;
+  }
 
 }
