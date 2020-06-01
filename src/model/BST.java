@@ -91,6 +91,19 @@ public class BST<T extends Comparable<T>> implements Tree<T> {
     return root == null;
   }
 
+  public BST<T> cloneTree() {
+    BST<T> newTree = new BST<>();
+    newTree.insertInOrder(newTree, this.root);
+    return newTree;
+  }
+
+  private void insertInOrder(BST<T> tree, Node<T> current) {
+    if (current != null) {
+      tree.insert(current.element);
+      insertInOrder(tree, current.left);
+      insertInOrder(tree, current.right);
+    }
+  }
   @Override
   public void traverseInOrder() {
     traverseInOrder(root);

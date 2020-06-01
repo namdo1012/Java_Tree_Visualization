@@ -54,10 +54,13 @@ public class Main extends Application {
 
             String text = userText.getText();
             int userInput = Integer.parseInt(text);
-
+            System.out.println("Before run: " + bstTree);
             // Add value to tree
-            avlTree.insert(userInput);
-            bstTree.insert(userInput);
+            treeControllerForAVL.tree.insert(userInput);
+
+            // I fixed there and it's worked, but i don't know why :\
+            treeControllerForBST.tree.insert(userInput);
+
 
             // Remove the last tree to paint again
             root.getChildren().removeAll(root.getChildren().filtered(el -> el instanceof Line));
@@ -66,6 +69,7 @@ public class Main extends Application {
             // Create treeView from treeNode
             treeControllerForAVL.updateTreeView();
             treeControllerForBST.updateTreeView();
+            System.out.println(treeControllerForBST.treeView.toString());
 
             // Display BST Tree to screen
             treeControllerForBST.displayTree(root);
@@ -104,8 +108,8 @@ public class Main extends Application {
             root.getChildren().removeAll(root.getChildren().filtered(el -> el instanceof Line));
 
             //  After animation, change BST Tree to AVL Tree to continue
-            //  treeControllerForBST.treeView = treeControllerForAVL.treeView;
-            //  treeControllerForBST.updateTreeView();
+
+//              treeControllerForBST.updateTreeView();
             //  treeControllerForAVL.updateTreeView();
 
             //  Display lines again
@@ -113,8 +117,11 @@ public class Main extends Application {
                   System.out.println("Value: " + node.element + ": " + cir.getLayoutX());
                   if (cir.getLineLeft() != null) root.getChildren().add(cir.getLineLeft());
                   if (cir.getLineRight() != null) root.getChildren().add(cir.getLineRight());
-              });
             });
+
+            treeControllerForBST.tree = treeControllerForAVL.tree.cloneTree();
+            System.out.println("After assign: " + treeControllerForBST.tree);
+        });
 
         primaryStage.show();
   }
