@@ -106,19 +106,24 @@ public class TreeController<T extends Comparable<T>> {
       System.out.println(element.toString() + " not exists!");
       return null;
     } else {
+      SearchCircleNode searchCir = new SearchCircleNode();
+      searchCir.setLayoutX(500);
+      searchCir.setLayoutY(50);
       double lastLayoutX = 500;
-      double lastLayoutY = 50;
       for (CircleNode o : getSearchPath(element)) {
-        SearchCircleNode searchCir = new SearchCircleNode();
-        searchCir.setLayoutX(lastLayoutX);
-        searchCir.setLayoutY(lastLayoutY);
-
-        TranslateTransition tr = searchCir.createAnimationTranslateTo(o.getLayoutX(), o.getLayoutY());
-        sq.getChildren().add(tr);
-        root.getChildren().add(searchCir);
+        if (o.getLayoutX() == 500) {
+          TranslateTransition tr = searchCir.createAnimationTranslateTo(o.getLayoutX(), o.getLayoutY());
+          sq.getChildren().add(tr);
+        } else if (o.getLayoutX() >= lastLayoutX) {
+          TranslateTransition tr = searchCir.createAnimationTranslateTo(500 + o.gethGap() * 2, 100);
+          sq.getChildren().add(tr);
+        } else {
+          TranslateTransition tr = searchCir.createAnimationTranslateTo(500 - o.gethGap() * 2, 100);
+          sq.getChildren().add(tr);
+        }
         lastLayoutX = o.getLayoutX();
-        lastLayoutY = o.getLayoutY();
       }
+      root.getChildren().add(searchCir);
       return sq;
     }
   }

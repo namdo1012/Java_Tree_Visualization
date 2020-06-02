@@ -17,6 +17,8 @@ public class CircleNode extends StackPane implements Comparable{
   private double hGap;
   private Line lineLeft, lineRight;
 
+  public CircleNode(){};
+
   public CircleNode(String value, double centerX, double centerY, double hGap) {
     this.value = value;
     this.hGap = hGap;
