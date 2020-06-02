@@ -20,6 +20,7 @@ import model.BST;
 import model.Node;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Scanner;
 
 public class Main extends Application {
@@ -33,10 +34,7 @@ public class Main extends Application {
         TreeController treeControllerForBST = new TreeController(bstTree);
         TreeController treeControllerForAVL = new TreeController(avlTree);
 
-    //    Intitialize parallel transition
-        ParallelTransition pl = new ParallelTransition();
         Group root = new Group();
-
         primaryStage.setTitle("Visualize Tree Algorithms");
         Scene scene = new Scene(root, 1000, 600);
         scene.setFill(Color.rgb(219, 237, 187));
@@ -63,7 +61,49 @@ public class Main extends Application {
         deleteButton.setMinWidth(50);
         root.getChildren().add(deleteButton); // attach the button to desired node in the scene
 
-        // Program run when user input new value and click this button
+      /***
+       *  DELETE: Program run when user input value need to be deleted and click this button
+       */
+      deleteButton.setOnAction(event -> {
+          // Get user input value
+          String text = deleteText.getText();
+          int userInput = Integer.parseInt(text);
+
+          // Add value to tree
+          treeControllerForAVL.getTreeNode().delete(userInput);
+//          treeControllerForBST.getTreeNode().delete(userInput);
+
+          // Remove the last tree to paint again
+          root.getChildren().removeAll(root.getChildren().filtered(el -> el instanceof Line));
+          root.getChildren().removeAll(root.getChildren().filtered(el -> el instanceof CircleNode));
+
+          // Create treeView from treeNode
+          treeControllerForAVL.updateTreeView();
+          treeControllerForBST.updateTreeView();
+
+          // Display BST Tree to screen
+          treeControllerForBST.displayTree(root);
+
+          // Create animation when delete on BST Tree
+          ParallelTransition deleteAnima = treeControllerForBST.createAnimationHandleDelete(root, treeControllerForAVL.treeView);
+
+          // Play rotate animation
+          deleteAnima.play();
+
+          // Clear all lines on the screen
+          root.getChildren().removeAll(root.getChildren().filtered(el -> el instanceof Line));
+
+          //  Display lines again
+          treeControllerForAVL.displayLines(root);
+
+          // Reassign the last AVLTree to BSTTree to continue
+          treeControllerForBST.setTreeNode(treeControllerForAVL.getTreeNode().cloneTree());
+      });
+
+      /***
+       *  INSERT: Program run when user input new value and click this button
+       */
+
         insertButton.setOnAction(event -> {
 
             // Get user input value
@@ -86,21 +126,10 @@ public class Main extends Application {
             treeControllerForBST.displayTree(root);
 
             // Run rotate animation on BST Tree
-            treeControllerForBST.treeView.forEach((bstKey, bstNode) -> {
-               treeControllerForAVL.treeView.forEach((avlKey, avlNode) -> {
-                   if (bstKey.element.compareTo(avlKey.element) == 0) {
-
-                       // Find position to moving to in avlTree
-                       double moveToX = avlNode.getLayoutX();
-                       double moveToY = avlNode.getLayoutY();
-                       // Add animation to root
-                       pl.getChildren().add(bstNode.createAnimationTranslateTo(moveToX, moveToY));
-                   }
-               });
-            });
+            ParallelTransition insertAnima = treeControllerForBST.createAnimationHandleInsert(root, treeControllerForAVL.treeView);
 
             // Play rotate animation
-            pl.play();
+            insertAnima.play();
 
             // Clear all lines on the screen
             root.getChildren().removeAll(root.getChildren().filtered(el -> el instanceof Line));

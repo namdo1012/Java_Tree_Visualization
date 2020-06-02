@@ -1,11 +1,15 @@
 package controller;
 
+import javafx.animation.ParallelTransition;
+import javafx.animation.TranslateTransition;
 import javafx.scene.Group;
+import javafx.scene.control.TreeView;
 import javafx.scene.shape.Line;
 import model.BST;
 import model.Node;
 import view.CircleNode;
 import java.util.HashMap;
+import java.util.Map;
 
 public class TreeController {
   public HashMap<Node, CircleNode> treeView;
@@ -77,8 +81,6 @@ public class TreeController {
     });
   }
 
-
-
   // Function return HashMap of changed Node and CircleNode
 //  public HashMap<Node, CircleNode> getListNodeChanged() {
 //    HashMap<Node, CircleNode> list = new HashMap<>();
@@ -92,4 +94,50 @@ public class TreeController {
 //    return list;
 //  }
 
+  // ANIMATION FOR TREECONTROLLER
+  public ParallelTransition createAnimationHandleDelete(Group root, HashMap<Node, CircleNode> afterDeleteTreeView){
+
+      ParallelTransition pl = new ParallelTransition();
+
+      this.treeView.forEach((bstKey, bstNode) -> {
+          int check = 0; // if this node have in both tree -> 1; else -> 0 -> delete
+          for (Map.Entry<Node, CircleNode> entry : afterDeleteTreeView.entrySet()) {
+              Node avlKey = entry.getKey();
+              CircleNode avlNode = entry.getValue();
+              if (bstKey.element.compareTo(avlKey.element) == 0) {
+                  // this node represent in both tree
+                  check = 1;
+                  // Find position to moving to in avlTree
+                  double moveToX = avlNode.getLayoutX();
+                  double moveToY = avlNode.getLayoutY();
+                  // Add animation to root
+                  pl.getChildren().add(bstNode.createAnimationTranslateTo(moveToX, moveToY));
+              }
+        }
+
+        // If not fine this node in AVL Tree -> remove it from screen
+        if (check == 0) root.getChildren().remove(bstNode);
+      });
+
+      return pl;
+  }
+
+  public ParallelTransition createAnimationHandleInsert(Group root, HashMap<Node, CircleNode> afterInsertTreeView){
+
+      ParallelTransition pl = new ParallelTransition();
+
+      this.treeView.forEach((bstKey, bstNode) -> {
+          afterInsertTreeView.forEach((avlKey, avlNode) -> {
+              if (bstKey.element.compareTo(avlKey.element) == 0) {
+                // Find position to moving to in avlTree
+                double moveToX = avlNode.getLayoutX();
+                double moveToY = avlNode.getLayoutY();
+                // Add animation to root
+                pl.getChildren().add(bstNode.createAnimationTranslateTo(moveToX, moveToY));
+              }
+          });
+      });
+
+      return pl;
+  }
 }
