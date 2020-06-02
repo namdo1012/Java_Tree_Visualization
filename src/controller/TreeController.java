@@ -106,14 +106,19 @@ public class TreeController<T extends Comparable<T>> {
       System.out.println(element.toString() + " not exists!");
       return null;
     } else {
-      SearchCircleNode searchCir = new SearchCircleNode();
+      double lastLayoutX = 500;
+      double lastLayoutY = 50;
       for (CircleNode o : getSearchPath(element)) {
-        System.out.println(o.getLayoutX());
-        TranslateTransition tr = searchCir.createAnimationTranslateTo(((CircleNode) o).getLayoutX(), ((CircleNode) o).getLayoutY());
+        SearchCircleNode searchCir = new SearchCircleNode();
+        searchCir.setLayoutX(lastLayoutX);
+        searchCir.setLayoutY(lastLayoutY);
+
+        TranslateTransition tr = searchCir.createAnimationTranslateTo(o.getLayoutX(), o.getLayoutY());
         sq.getChildren().add(tr);
+        root.getChildren().add(searchCir);
+        lastLayoutX = o.getLayoutX();
+        lastLayoutY = o.getLayoutY();
       }
-      System.out.println(sq.getChildren().toArray().toString());
-      root.getChildren().add(searchCir);
       return sq;
     }
   }

@@ -80,6 +80,10 @@ public class Main extends Application {
       String text = searchText.getText();
       int userInput = Integer.parseInt(text);
 
+      // Remove the last tree to paint again
+      root.getChildren().removeAll(root.getChildren().filtered(el -> el instanceof Line));
+      root.getChildren().removeAll(root.getChildren().filtered(el -> el instanceof CircleNode));
+
       treeControllerForAVL.updateTreeView();
       treeControllerForAVL.displayTree(root);
       treeControllerForAVL.createAnimationOnSearchTree(root, userInput).play();
