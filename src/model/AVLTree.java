@@ -38,20 +38,16 @@ public class AVLTree<T extends Comparable<T>> extends BST<T>{
     updateHeight(current);
     int balance = getBalance(current);
     if (balance > 1) {
-      // Right right case
       if (height(current.right.right) > height(current.right.left)) {
         current = rotateLeft(current);
       } else {
-      // Right left case
         current.right = rotateRight(current.right);
         current = rotateLeft(current);
       }
     } else if (balance < -1) {
-      // Left left case
       if (height(current.left.left) > height(current.left.right)) {
         current = rotateRight(current);
       } else {
-      // Left right case
         current.left = rotateLeft(current.left);
         current = rotateRight(current);
       }

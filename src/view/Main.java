@@ -16,133 +16,157 @@ import javafx.scene.shape.Line;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import model.AVLTree;
+import model.RBTree;
 import model.BST;
 import model.Node;
 
 import java.util.HashMap;
-import java.util.Map;
 import java.util.Scanner;
 
 public class Main extends Application {
 
   @Override
-  public void start(Stage primaryStage) throws Exception{
+  public void start(Stage primaryStage) throws Exception {
+    BST<Integer> bstTree = new BST<>();
+    AVLTree<Integer> avlTree = new AVLTree<>();
 
-        BST<Integer> bstTree = new BST<>();
-        AVLTree<Integer> avlTree = new AVLTree<>();
+    TreeController treeControllerForBST = new TreeController(bstTree);
+    TreeController treeControllerForAVL = new TreeController(avlTree);
 
-        TreeController treeControllerForBST = new TreeController(bstTree);
-        TreeController treeControllerForAVL = new TreeController(avlTree);
+    Group root = new Group();
+    primaryStage.setTitle("Visualize Tree Algorithms");
+    Scene scene = new Scene(root, 1000, 600);
+    scene.setFill(Color.rgb(219, 237, 187));
+    primaryStage.setScene(scene);
 
-        Group root = new Group();
-        primaryStage.setTitle("Visualize Tree Algorithms");
-        Scene scene = new Scene(root, 1000, 600);
-        scene.setFill(Color.rgb(219, 237, 187));
-        primaryStage.setScene(scene);
+    TextField insertText = new TextField();
+    insertText.setPromptText("Insert a value...");
+    root.getChildren().add(insertText); //attach the text field to the scene.
 
-        TextField insertText = new TextField();
-        insertText.setPromptText("Insert a value...");
-        root.getChildren().add(insertText); //attach the text field to the scene.
+    TextField deleteText = new TextField();
+    deleteText.setLayoutX(250);
+    deleteText.setPromptText("Delete a value...");
+    root.getChildren().add(deleteText); //attach the text field to the scene.
 
-        TextField deleteText = new TextField();
-        deleteText.setLayoutX(250);
-        deleteText.setPromptText("Delete a value...");
-        root.getChildren().add(deleteText); //attach the text field to the scene.
+    Button insertButton = new Button("Insert");
+    insertButton.setLayoutX(500);
+    insertButton.setLayoutY(0);
+    insertButton.setMinWidth(50);
+    root.getChildren().add(insertButton);
 
-        Button insertButton = new Button("Insert");
-        insertButton.setLayoutX(500);
-        insertButton.setLayoutY(0);
-        insertButton.setMinWidth(50);
-        root.getChildren().add(insertButton);
+    Button deleteButton = new Button("Delete");
+    deleteButton.setLayoutX(600);
+    deleteButton.setLayoutY(0);
+    deleteButton.setMinWidth(50);
+    root.getChildren().add(deleteButton); // attach the button to desired node in the scene
 
-        Button deleteButton = new Button("Delete");
-        deleteButton.setLayoutX(600);
-        deleteButton.setLayoutY(0);
-        deleteButton.setMinWidth(50);
-        root.getChildren().add(deleteButton); // attach the button to desired node in the scene
+    TextField searchText = new TextField();
+    searchText.setPromptText("Search a value...");
+    searchText.setLayoutX(350);
+    searchText.setMinWidth(50);
+    root.getChildren().add(searchText); //attach the text field to the scene.
 
-      /***
-       *  DELETE: Program run when user input value need to be deleted and click this button
-       */
-      deleteButton.setOnAction(event -> {
-          // Get user input value
-          String text = deleteText.getText();
-          int userInput = Integer.parseInt(text);
+    Button searchButton = new Button("Search");
+    searchButton.setLayoutX(700);
+    searchButton.setLayoutY(0);
+    searchButton.setMinWidth(50);
+    root.getChildren().add(searchButton);
 
-          // Add value to tree
-          treeControllerForAVL.getTreeNode().delete(userInput);
-//          treeControllerForBST.getTreeNode().delete(userInput);
+    /***
+     *  SEARCH: Program run when user input value need to be deleted and click this button
+     */
+    searchButton.setOnAction(event -> {
+      // Get user input value
+      String text = searchText.getText();
+      int userInput = Integer.parseInt(text);
 
-          // Remove the last tree to paint again
-          root.getChildren().removeAll(root.getChildren().filtered(el -> el instanceof Line));
-          root.getChildren().removeAll(root.getChildren().filtered(el -> el instanceof CircleNode));
+      treeControllerForAVL.updateTreeView();
+      treeControllerForAVL.displayTree(root);
+      treeControllerForAVL.createAnimationOnSearchTree(root, userInput).play();
+    });
 
-          // Create treeView from treeNode
-          treeControllerForAVL.updateTreeView();
-          treeControllerForBST.updateTreeView();
+    /***
+     *  DELETE: Program run when user input value need to be deleted and click this button
+     */
+    deleteButton.setOnAction(event -> {
+      // Get user input value
+      String text = deleteText.getText();
+      int userInput = Integer.parseInt(text);
 
-          // Display BST Tree to screen
-          treeControllerForBST.displayTree(root);
+      // Add value to tree
+      treeControllerForAVL.tree.delete(userInput);
+//          treeControllerForBST.tree.delete(userInput);
 
-          // Create animation when delete on BST Tree
-          ParallelTransition deleteAnima = treeControllerForBST.createAnimationHandleDelete(root, treeControllerForAVL.treeView);
+      // Remove the last tree to paint again
+      root.getChildren().removeAll(root.getChildren().filtered(el -> el instanceof Line));
+      root.getChildren().removeAll(root.getChildren().filtered(el -> el instanceof CircleNode));
 
-          // Play rotate animation
-          deleteAnima.play();
+      // Create treeView from treeNode
+      treeControllerForAVL.updateTreeView();
+      treeControllerForBST.updateTreeView();
 
-          // Clear all lines on the screen
-          root.getChildren().removeAll(root.getChildren().filtered(el -> el instanceof Line));
+      // Display BST Tree to screen
+      treeControllerForBST.displayTree(root);
 
-          //  Display lines again
-          treeControllerForAVL.displayLines(root);
+      // Create animation when delete on BST Tree
+      ParallelTransition deleteAnima = treeControllerForBST.createAnimationHandleDelete(root, treeControllerForAVL.treeView);
 
-          // Reassign the last AVLTree to BSTTree to continue
-          treeControllerForBST.setTreeNode(treeControllerForAVL.getTreeNode().cloneTree());
-      });
+      // Play rotate animation
+      deleteAnima.play();
 
-      /***
-       *  INSERT: Program run when user input new value and click this button
-       */
+      // Clear all lines on the screen
+      root.getChildren().removeAll(root.getChildren().filtered(el -> el instanceof Line));
 
-        insertButton.setOnAction(event -> {
+      //  Display lines again
+      treeControllerForAVL.displayLines(root);
 
-            // Get user input value
-            String text = insertText.getText();
-            int userInput = Integer.parseInt(text);
+      // Reassign the last AVLTree to BSTTree to continue
+      treeControllerForBST.tree = treeControllerForAVL.tree.cloneTree();
+    });
 
-            // Add value to tree
-            treeControllerForAVL.getTreeNode().insert(userInput);
-            treeControllerForBST.getTreeNode().insert(userInput);
+    /***
+     *  INSERT: Program run when user input new value and click this button
+     */
 
-            // Remove the last tree to paint again
-            root.getChildren().removeAll(root.getChildren().filtered(el -> el instanceof Line));
-            root.getChildren().removeAll(root.getChildren().filtered(el -> el instanceof CircleNode));
+    insertButton.setOnAction(event -> {
 
-            // Create treeView from treeNode
-            treeControllerForAVL.updateTreeView();
-            treeControllerForBST.updateTreeView();
+      // Get user input value
+      String text = insertText.getText();
+      int userInput = Integer.parseInt(text);
 
-            // Display BST Tree to screen
-            treeControllerForBST.displayTree(root);
+      // Add value to tree
+      treeControllerForAVL.tree.insert(userInput);
+      treeControllerForBST.tree.insert(userInput);
 
-            // Run rotate animation on BST Tree
-            ParallelTransition insertAnima = treeControllerForBST.createAnimationHandleInsert(root, treeControllerForAVL.treeView);
+      // Remove the last tree to paint again
+      root.getChildren().removeAll(root.getChildren().filtered(el -> el instanceof Line));
+      root.getChildren().removeAll(root.getChildren().filtered(el -> el instanceof CircleNode));
 
-            // Play rotate animation
-            insertAnima.play();
+      // Create treeView from treeNode
+      treeControllerForAVL.updateTreeView();
+      treeControllerForBST.updateTreeView();
 
-            // Clear all lines on the screen
-            root.getChildren().removeAll(root.getChildren().filtered(el -> el instanceof Line));
+      // Display BST Tree to screen
+      treeControllerForBST.displayTree(root);
 
-            //  Display lines again
-            treeControllerForAVL.displayLines(root);
+      // Run rotate animation on BST Tree
+      ParallelTransition insertAnima = treeControllerForBST.createAnimationHandleInsert(root, treeControllerForAVL.treeView);
 
-            // Reassign the last AVLTree to BSTTree to continue
-            treeControllerForBST.setTreeNode(treeControllerForAVL.getTreeNode().cloneTree());
-        });
+      // Play rotate animation
+      insertAnima.play();
 
-        primaryStage.show();
-  }
+      // Clear all lines on the screen
+      root.getChildren().removeAll(root.getChildren().filtered(el -> el instanceof Line));
+
+      //  Display lines again
+      treeControllerForAVL.displayLines(root);
+
+      // Reassign the last AVLTree to BSTTree to continue
+      treeControllerForBST.tree = treeControllerForAVL.tree.cloneTree();
+    });
+
+    primaryStage.show();
+}
 
   public static void main(String[] args) {
     launch(args);

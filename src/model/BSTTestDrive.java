@@ -11,5 +11,14 @@ public class BSTTestDrive {
     bst.insert(2);
     bst.insert(4);
     bst.traverseInOrder();
+    System.out.println("\n");
+
+    BST<Integer> cloneBST = bst.cloneTree();
+
+    bst.insert(100);
+    bst.traverseInOrder();
+    System.out.println("\n");
+
+    cloneBST.traverseInOrder();
   }
 }

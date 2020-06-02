@@ -1,5 +1,7 @@
 package model;
 
+import java.util.ArrayList;
+
 public class BST<T extends Comparable<T>> implements Tree<T> {
   public Node<T> root = null;
 
@@ -13,8 +15,10 @@ public class BST<T extends Comparable<T>> implements Tree<T> {
   }
 
   @Override
-  public void insert(T element) {
-    root = insert(root, element);
+  public boolean insert(T element) {
+    this.root = insert(this.root, element);
+    if (this.root == null) return false;
+    return true;
   }
 
   public Node<T> insert(Node<T> current, T element) {
@@ -31,8 +35,10 @@ public class BST<T extends Comparable<T>> implements Tree<T> {
   }
 
   @Override
-  public void delete(T element) {
+  public boolean delete(T element) {
     root = delete(root, element);
+    if (root == null) return false;
+    return true;
   }
 
   public Node<T> delete(Node<T> current, T element) {
@@ -71,7 +77,7 @@ public class BST<T extends Comparable<T>> implements Tree<T> {
     return search(root, element);
   }
 
-  public Node<T> search(Node<T> current, T element) {
+  private Node<T> search(Node<T> current, T element) {
     if (current == null) {
       return null;
     }
@@ -86,6 +92,22 @@ public class BST<T extends Comparable<T>> implements Tree<T> {
     return null;
   }
 
+  public ArrayList<Node<T>> path(T element){
+    ArrayList<Node<T>> list = new ArrayList<>();
+    Node<T> current = root;
+    while(current != null){
+      list.add(current);
+      if(element.compareTo(current.element) < 0) {
+        current = current.left;
+      } else if(element.compareTo(current.element) > 0) {
+        current = current.right;
+      } else {
+        break;
+      }
+    }
+    return list;
+  }
+
   @Override
   public boolean isEmpty() {
     return root == null;
@@ -96,10 +118,10 @@ public class BST<T extends Comparable<T>> implements Tree<T> {
     traverseInOrder(root);
   }
 
-  public void traverseInOrder(Node<T> current) {
+  private void traverseInOrder(Node<T> current) {
     if (current != null) {
-      traverseInOrder(current.left);
       System.out.print(current.element.toString() + " -> ");
+      traverseInOrder(current.left);
       traverseInOrder(current.right);
     }
   }
