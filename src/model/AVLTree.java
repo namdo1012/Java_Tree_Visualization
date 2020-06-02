@@ -1,7 +1,5 @@
 package model;
 
-import controller.TreeController;
-
 public class AVLTree<T extends Comparable<T>> extends BST<T>{
 
   private int height(Node<T> current) {
