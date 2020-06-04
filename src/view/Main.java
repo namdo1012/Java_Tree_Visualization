@@ -28,10 +28,12 @@ public class Main extends Application {
   @Override
   public void start(Stage primaryStage) throws Exception {
     BST<Integer> bstTree = new BST<>();
-    AVLTree<Integer> avlTree = new AVLTree<>();
+    BST<Integer> bstTreeAfterHandle = new BST<>();
+//    AVLTree<Integer> avlTree = new AVLTree<>();
 
     TreeController treeControllerForBST = new TreeController(bstTree);
-    TreeController treeControllerForAVL = new TreeController(avlTree);
+    TreeController treeControllerForBSTAfterHandle = new TreeController(bstTreeAfterHandle);
+//    TreeController treeControllerForAVL = new TreeController(avlTree);
 
     Group root = new Group();
     primaryStage.setTitle("Visualize Tree Algorithms");
@@ -84,9 +86,12 @@ public class Main extends Application {
       root.getChildren().removeAll(root.getChildren().filtered(el -> el instanceof Line));
       root.getChildren().removeAll(root.getChildren().filtered(el -> el instanceof CircleNode));
 
-      treeControllerForAVL.updateTreeView();
-      treeControllerForAVL.displayTree(root);
-      treeControllerForAVL.createAnimationOnSearchTree(root, userInput).play();
+//      treeControllerForAVL.updateTreeView();
+//      treeControllerForAVL.displayTree(root);
+//      treeControllerForAVL.createAnimationOnSearchTree(root, userInput).play();
+      treeControllerForBST.updateTreeView();
+      treeControllerForBST.displayTree(root);
+      treeControllerForBST.createAnimationOnSearchTree(root, userInput).play();
     });
 
     /***
@@ -98,7 +103,8 @@ public class Main extends Application {
       int userInput = Integer.parseInt(text);
 
       // Add value to tree
-      treeControllerForAVL.tree.delete(userInput);
+//      treeControllerForAVL.tree.delete(userInput);
+      treeControllerForBSTAfterHandle.tree.delete(userInput);
 //          treeControllerForBST.tree.delete(userInput);
 
       // Remove the last tree to paint again
@@ -106,14 +112,14 @@ public class Main extends Application {
       root.getChildren().removeAll(root.getChildren().filtered(el -> el instanceof CircleNode));
 
       // Create treeView from treeNode
-      treeControllerForAVL.updateTreeView();
-      treeControllerForBST.updateTreeView();
+//      treeControllerForAVL.updateTreeView();
+      treeControllerForBSTAfterHandle.updateTreeView();
 
       // Display BST Tree to screen
       treeControllerForBST.displayTree(root);
 
       // Create animation when delete on BST Tree
-      ParallelTransition deleteAnima = treeControllerForBST.createAnimationHandleDelete(root, treeControllerForAVL.treeView);
+      ParallelTransition deleteAnima = treeControllerForBST.createAnimationHandleDelete(root, treeControllerForBSTAfterHandle.treeView);
 
       // Play rotate animation
       deleteAnima.play();
@@ -122,10 +128,10 @@ public class Main extends Application {
       root.getChildren().removeAll(root.getChildren().filtered(el -> el instanceof Line));
 
       //  Display lines again
-      treeControllerForAVL.displayLines(root);
+      treeControllerForBSTAfterHandle.displayLines(root);
 
       // Reassign the last AVLTree to BSTTree to continue
-      treeControllerForBST.tree = treeControllerForAVL.tree.cloneTree();
+      treeControllerForBST.tree = treeControllerForBSTAfterHandle.tree.cloneTree();
     });
 
     /***
@@ -139,7 +145,8 @@ public class Main extends Application {
       int userInput = Integer.parseInt(text);
 
       // Add value to tree
-      treeControllerForAVL.tree.insert(userInput);
+//      treeControllerForAVL.tree.insert(userInput);
+      treeControllerForBSTAfterHandle.tree.insert(userInput);
       treeControllerForBST.tree.insert(userInput);
 
       // Remove the last tree to paint again
@@ -147,14 +154,15 @@ public class Main extends Application {
       root.getChildren().removeAll(root.getChildren().filtered(el -> el instanceof CircleNode));
 
       // Create treeView from treeNode
-      treeControllerForAVL.updateTreeView();
+//      treeControllerForAVL.updateTreeView();
+      treeControllerForBSTAfterHandle.updateTreeView();
       treeControllerForBST.updateTreeView();
 
       // Display BST Tree to screen
       treeControllerForBST.displayTree(root);
 
       // Run rotate animation on BST Tree
-      ParallelTransition insertAnima = treeControllerForBST.createAnimationHandleInsert(root, treeControllerForAVL.treeView);
+      ParallelTransition insertAnima = treeControllerForBST.createAnimationHandleInsert(root, treeControllerForBST.treeView);
 
       // Play rotate animation
       insertAnima.play();
@@ -163,10 +171,10 @@ public class Main extends Application {
       root.getChildren().removeAll(root.getChildren().filtered(el -> el instanceof Line));
 
       //  Display lines again
-      treeControllerForAVL.displayLines(root);
+      treeControllerForBST.displayLines(root);
 
       // Reassign the last AVLTree to BSTTree to continue
-      treeControllerForBST.tree = treeControllerForAVL.tree.cloneTree();
+      treeControllerForBST.tree = treeControllerForBSTAfterHandle.tree.cloneTree();
     });
 
     primaryStage.show();
